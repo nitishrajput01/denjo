@@ -12,7 +12,8 @@ web-socket/
 
 ## Screenshots
 
-> _No screenshots yet — add images here (e.g. `docs/screenshot-register.png`) and reference them with `![Register page](docs/screenshot-register.png)`._
+<img width="1065" height="808" alt="image" src="https://github.com/user-attachments/assets/12aab4e7-e245-4a27-b168-9df24dd151b5" />
+
 
 ## Client (`client/chat-app`)
 
