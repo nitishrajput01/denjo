@@ -1,32 +1,76 @@
-import { NextFunction, Response, Request } from "express";
 import { getErrors } from "../../constants/error.msg";
-import { createUser, findUserByEmailOrUsername } from "./user.service";
-import { createdResponse, errorResponse, validationErrorResponse } from "../../utils/response";
-import registerSchema from "./user.schema";
-import { hashPassword } from "../../utils/hash";
+import { createUser, findUserByEmailOrUsername, findUserByUsername } from "./user.service";
+import {loginSchema, registerSchema} from "./user.schema";
+import { hashPassword, comparePassword } from "../../utils/hash";
+import jwt from "jsonwebtoken";
+import { generateAccessToken, generateRefreshToken } from "../../utils/token";
 
 
-export const register = async (req: Request, res:Response, next: NextFunction) => {
-    const result = registerSchema.safeParse(req.body);
-    
-    let {name, email, username, password} = req.body;
-    if(!result.success) {
-        return validationErrorResponse(res, result.error.flatten())
+export const register = async (body: any) => {
+    const result = registerSchema.safeParse(body);
+
+    if (!result.success) {
+        const error: any = new Error('Validation failed');
+        error.status = 400;
+        error.details = result.error.flatten();
+        throw error;
     }
 
-    const existingUser = await findUserByEmailOrUsername(email, username);
+    let { name, email, username, password } = body;
 
-    if(existingUser) {
-        const message = existingUser.email === email
-            ? getErrors("Email_Already_Exists")
-            : getErrors("Username_Already_Exists");
-        return errorResponse(res, message, 409)
-    }
+    await findByUserNameOrEmail(email, username);
+  
 
     password = await hashPassword(password);
 
-    const user = await createUser({name, email, username, password});
+    const user = await createUser({ name, email, username, password });
 
-    const {password: _password, ...userWithoutPassword} = user;
-    return createdResponse(res, userWithoutPassword, "Account created")
+    const { password: _password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+}
+
+
+export const login = async(body: any) => {
+    const result = loginSchema.safeParse(body);
+    if(!result.success) {
+        const error: any = new Error('Validation failed');
+        error.status = 400;
+         error.details = result.error.flatten();
+        throw error;
+    }
+
+    const {username, password } = body;
+    const existingUser = await findUserByUsername(username);
+
+    if (!existingUser) {
+        const error: any = new Error(getErrors("Invalid_Credentials"));
+        error.status = 401;
+        throw error;
+    }
+
+    const isPasswordValid = await comparePassword(password, existingUser.password);
+    if (!isPasswordValid) {
+        const error: any = new Error(getErrors("Invalid_Credentials"));
+        error.status = 401;
+        throw error;
+    }
+    const payload = {id: existingUser.id, email: existingUser.email};
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+
+    const {id} = existingUser;
+    return { accessToken, refreshToken, userId: id };
+}
+
+const findByUserNameOrEmail = async (email: string, username: string) => {
+      const existingUser = await findUserByEmailOrUsername(email, username);
+    if (existingUser) {
+        const message = existingUser.email === email
+            ? getErrors("Email_Already_Exists")
+            : getErrors("Username_Already_Exists");
+        const error: any = new Error(message);
+        error.status = 409;
+        throw error;
+    }
 }

@@ -1,0 +1,38 @@
+service: my-app
+
+useDotenv: true
+
+package:
+  patterns:
+    - 'src/generated/prisma/**'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}
+
+
+functions:
+  register:
+    handler: handlers/register.handler
+    events:
+      - http:
+          path: /api/v1/auth/register
+          method: post
+          cors: true
+  login:
+    handler: handlers/login.handler
+    events:
+      - http:
+          path: /api/v1/auth/login
+          method: post
+          cors: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-plugin-typescript
+  - serverless-offline
