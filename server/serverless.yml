@@ -26,6 +26,24 @@ provider:
     DATABASE_URL: ${env:DATABASE_URL}
     JWT_SECRET: ${env:JWT_SECRET}
     JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}
+    SQS_QUEUE_URL: !Ref OTPQueue
+    FROM_EMAIL: ${env:FROM_EMAIL}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource: !GetAtt OTPQueue.Arn
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
 
 
 functions:
@@ -43,6 +61,21 @@ functions:
           path: /api/v1/auth/login
           method: post
           cors: true
+  sendOTP:
+    handler: handlers/sendOtp.handler
+    events:
+      - sqs:
+          arn: !GetAtt OTPQueue.Arn
+          batchSize: 10
+
+resources:
+  Resources:
+    OTPQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: otp-queue
+        VisibilityTimeout: 30
+        MessageRetentionPeriod: 3600 
 
 plugins:
   - serverless-dotenv-plugin

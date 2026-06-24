@@ -1,9 +1,11 @@
 import { getErrors } from "../../constants/error.msg";
-import { createUser, findUserByEmailOrUsername, findUserByUsername } from "./user.service";
+import { createUser, findUserByEmailOrUsername, findUserByUsername, updateUserOTP } from "./user.service";
 import {loginSchema, registerSchema} from "./user.schema";
 import { hashPassword, comparePassword } from "../../utils/hash";
 import jwt from "jsonwebtoken";
 import { generateAccessToken, generateRefreshToken } from "../../utils/token";
+import { generateOTP } from "../../utils/otp";
+import { sendToQueue } from "../../utils/sqs";
 
 
 export const register = async (body: any) => {
@@ -24,6 +26,23 @@ export const register = async (body: any) => {
     password = await hashPassword(password);
 
     const user = await createUser({ name, email, username, password });
+
+    // generate Otp 6 digits 
+
+    const otp = generateOTP();
+
+    // updatedb with otp in db
+
+    await updateUserOTP(user.id, otp);
+
+    // create a queue job pass email, otp, name
+
+    await sendToQueue({
+    type: 'SEND_OTP',
+    email: user.email,
+    name: user.name,
+    otp
+  });
 
     const { password: _password, ...userWithoutPassword } = user;
     return userWithoutPassword;

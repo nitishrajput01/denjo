@@ -15,3 +15,14 @@ export const findUserByUsername = (username: string) => {
 export const createUser = (data: {name: string; email: string; username: string; password: string}) => {
     return prisma.user.create({data});
 };
+
+export const updateUserOTP = async (id: string, otp: string) => {
+  const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+  return await prisma.user.update({
+    where: { id },
+    data: {
+      otp,
+      otpExpiry: expiry
+    }
+  });
+};

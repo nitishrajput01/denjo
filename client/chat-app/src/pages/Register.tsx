@@ -55,6 +55,7 @@ export function Register() {
   })
 
   const password = watch('password')
+  const email = watch('email')
 
   const onSubmit = (values: RegisterFormValues) => {
     const {agree, ...remainingValues} = values
@@ -70,9 +71,9 @@ export function Register() {
 
   useEffect(() => {
     if (success) {
-      navigate('/login')
+      navigate('/verify-otp', { state: { email } })
     }
-  }, [success, navigate])
+  }, [success, navigate, email])
 
   return (
     <div className="register">

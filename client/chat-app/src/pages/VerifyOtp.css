@@ -1,0 +1,122 @@
+.verify-otp {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding: 28px 40px 60px;
+}
+
+.verify-otp__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1080px;
+  margin: 0 auto 28px;
+  padding-left: 24px;
+}
+
+.verify-otp__signin {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.verify-otp__signin span {
+  color: #ff5c8d;
+  font-weight: 600;
+}
+
+.verify-otp__card {
+  max-width: 1080px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  min-height: 640px;
+}
+
+.verify-otp__illustration {
+  background: linear-gradient(160deg, #fff0f5 0%, #ffe3ed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.verify-otp__illustration-art {
+  width: 100%;
+  max-width: 340px;
+}
+
+.verify-otp__panel {
+  display: flex;
+  align-items: center;
+  padding: 48px 56px;
+}
+
+.verify-otp__form-wrap {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.verify-otp__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+.verify-otp__subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.verify-otp__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.verify-otp__input {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 10px;
+}
+
+.verify-otp__submit {
+  background: #ff5c8d;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.verify-otp__submit:hover {
+  background: #f3447c;
+}
+
+.verify-otp__submit:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+@media (max-width: 860px) {
+  .verify-otp__card {
+    grid-template-columns: 1fr;
+  }
+
+  .verify-otp__illustration {
+    display: none;
+  }
+
+  .verify-otp__topbar {
+    padding-left: 0;
+  }
+}
