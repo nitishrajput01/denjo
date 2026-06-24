@@ -3,13 +3,25 @@ service: my-app
 useDotenv: true
 
 package:
+  individually: true
   patterns:
-    - 'src/generated/prisma/**'
+    - '!**/*'                          # exclude everything first
+    - 'handlers/**'                    # include handlers
+    - 'src/**'                         # include src
+    - '!node_modules/**'               # exclude all node_modules
+    - 'node_modules/.prisma/**'        # include prisma binary
+    - 'node_modules/@prisma/client/**' # include prisma client
+    - 'src/generated/prisma/**'        # include generated prisma
+    - '!.git/**'                       # exclude git
+    - '!.env'                          # exclude env
+    - '!README.md'                     # exclude readme
+    - '!*.test.ts'                     # exclude tests
 
 provider:
   name: aws
   runtime: nodejs18.x
   region: ap-south-1
+  stage: dev
   environment:
     DATABASE_URL: ${env:DATABASE_URL}
     JWT_SECRET: ${env:JWT_SECRET}
@@ -34,5 +46,18 @@ functions:
 
 plugins:
   - serverless-dotenv-plugin
-  - serverless-plugin-typescript
+  - serverless-esbuild   
   - serverless-offline
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0      
+    httpPort: 3000
+
+esbuild:
+    bundle: true
+    minify: true
+    target: node18
+    external:
+      - '@prisma/client'
+      - '.prisma/client'

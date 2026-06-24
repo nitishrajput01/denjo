@@ -20,7 +20,7 @@ export const loginAction = createAsyncThunk(
     async(credentials: {username: string; password: string}, {rejectWithValue}) => {
         try{
             const response = await api.post("auth/login", credentials)
-            return response.data.token;
+            return response.data;
         }catch(error: any) {
             return rejectWithValue(error.response?.data?.message || "Login failed")
         }

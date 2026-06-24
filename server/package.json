@@ -4,10 +4,11 @@
   "main": "ws_client.js",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-experimental-require-module serverless offline",
+    "package": "cross-env NODE_OPTIONS=--no-experimental-require-module serverless package",
     "debug": "node --inspect -r ts-node/register src/server.ts",
     "build": "tsc",
-    "remove": "serverless remove",
-    "deploy": "serverless deploy",
+    "remove": "cross-env NODE_OPTIONS=--no-experimental-require-module serverless remove",
+    "deploy": "cross-env NODE_OPTIONS=--no-experimental-require-module serverless deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,7 +17,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
     "prisma": "^6.19.3",
@@ -24,14 +25,15 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.162",
+    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.0.0",
     "cross-env": "^10.1.0",
     "esbuild": "^0.28.1",
     "serverless": "^3.40.0",
     "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-esbuild": "^1.57.2",
     "serverless-offline": "^12.0.4",
-    "serverless-plugin-typescript": "^2.1.5",
     "typescript": "^6.0.3"
   }
 }
